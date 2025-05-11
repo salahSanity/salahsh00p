@@ -70,19 +70,11 @@ export default {
       type: "string",
     },
     {
-      name: "maturity",
-      title: "Maturity",
-      type: "string",
-      options: {
-        list: [
-          { title: "Minimal", value: "minimal" },
-          { title: "Low", value: "low" },
-          { title: "Medium", value: "medium" },
-          { title: "High", value: "high" },
-        ],
-      },
-      initialValue: "minimal",
-    },
+      name: "link",
+      title: "Link",
+      type: "url",
+      validation: (Rule: any) => Rule.required().uri(),
+    }
   ],
   preview: {
     select: {

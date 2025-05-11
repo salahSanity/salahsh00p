@@ -4,6 +4,12 @@ export default {
   type: "document",
   fields: [
     {
+      name: "customerName",
+      title: "Customer Name",
+      type: "string",
+      validation: (Rule: any) => Rule.required(),
+    },
+    {
       name: "productId",
       title: "Product ID",
       type: "number",
@@ -14,34 +20,6 @@ export default {
       title: "Product Name",
       type: "string",
       validation: (Rule: any) => Rule.required(),
-    },
-    {
-      name: "contactInfo",
-      title: "Contact Info",
-      type: "string",
-      description: "Email or phone number of the customer",
-      validation: (Rule: any) => Rule.required(),
-    },
-    {
-      name: "quantity",
-      title: "Quantity",
-      type: "number",
-      initialValue: 1,
-      validation: (Rule: any) => Rule.required().min(1),
-    },
-    {
-      name: "status",
-      title: "Status",
-      type: "string",
-      options: {
-        list: [
-          { title: "Pending", value: "pending" },
-          { title: "Processing", value: "processing" },
-          { title: "Completed", value: "completed" },
-          { title: "Cancelled", value: "cancelled" },
-        ],
-      },
-      initialValue: "pending",
     },
     {
       name: "notes",
