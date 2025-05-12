@@ -32,7 +32,7 @@ type Product = {
   price: number;
   image?: any;
 };
-
+export const dynamic = 'force-dynamic';
 async function getHero(): Promise<HeroData> {
   const data = await client.fetch(
     `*[_type == "hero"][0]{
