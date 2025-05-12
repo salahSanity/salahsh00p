@@ -45,7 +45,9 @@ async function getHero(): Promise<HeroData> {
       buttonText,
       buttonIcon,
       images
-    }`
+    }`, {
+        cache: 'no-store',
+    }
   );
   return data;
 }
@@ -58,7 +60,9 @@ async function getProducts(): Promise<Product[]> {
     price,
     image,
     "id": _id
-  }`);
+  }`, {
+        cache: 'no-store',
+    });
   return data;
 }
 
