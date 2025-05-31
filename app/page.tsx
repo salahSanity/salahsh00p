@@ -62,7 +62,10 @@ async function getProducts(): Promise<Product[]> {
     "id": _id,
     link
   }`);
-  return data;
+  return data.map((product: any) => ({
+    ...product,
+    imageUrl: product.image ? imageUrl(product.image) : null,
+  }));
 }
 
 export default async function Home() {
