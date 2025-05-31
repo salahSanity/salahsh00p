@@ -1,6 +1,9 @@
 "use client";
 
+import type React from "react";
+
 import { useState } from "react";
+
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -12,66 +15,61 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { createOrder } from "@/lib/actions";
-import { imageUrl } from "@/client";
-import { toast } from "react-toastify";
 
-type Product = {
-  _id: string;
+interface Product {
   id: string;
   name: string;
-  isFree: boolean;
+  image?: string;
+  imageUrl?: string | null;
   price: number;
-  image?: any;
-};
+  isFree: boolean;
+  link?: string;
+}
 
-export default function ProductGrid({ products }: { products: Product[] }) {
-  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+interface ProductGridProps {
+  products: Product[];
+}
+
+const ProductGrid: React.FC<ProductGridProps> = ({ products }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [contactInfo, setContactInfo] = useState("");
-  const [quantity, setQuantity] = useState("1");
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [username, setUsername] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleBuy = (product: Product) => {
     setSelectedProduct(product);
     setIsModalOpen(true);
+    setUsername("");
+    setLoading(false);
   };
 
   const handleSubmit = async () => {
-    if (!contactInfo) {
-      toast.error("Please enter your name");
+    if (!username) {
       return;
     }
-
-    try {
-      await createOrder({
-        productId: selectedProduct!.id,
-        productName: selectedProduct!.name,
-        contactInfo,
-        quantity: Number.parseInt(quantity),
-        status: "pending",
-      });
-
-      toast.success(
-        `Order placed! You ordered ${quantity} ${selectedProduct!.name}`
-      );
-
+    setLoading(true);
+    setTimeout(() => {
+      if (selectedProduct?.link) {
+        window.open(selectedProduct.link, "_blank");
+      }
       setIsModalOpen(false);
-      setContactInfo("");
-      setQuantity("1");
-    } catch (error) {
-      toast.error("Failed to place order");
-    }
+      setUsername("");
+      setLoading(false);
+    }, 100);
   };
 
   return (
     <>
-      <div className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4'>
+      <div className='grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 sm:gap-4'>
         {products.map((product) => (
-          <div key={product.id} className='flex flex-col items-center'>
-            <div className='w-24 h-24 rounded-full bg-gradient-to-r from-pink-500 to-purple-500 border-2 border-yellow-400 mb-2 overflow-hidden flex items-center justify-center'>
-              {product.image ? (
+          <div
+            key={product.id}
+            className='flex flex-col items-center p-2 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg transition-colors'
+          >
+            <div className='w-full aspect-square rounded-full bg-gradient-to-r from-pink-500 to-purple-500 border-2 border-yellow-400 mb-2 overflow-hidden flex items-center justify-center max-w-[100px] mx-auto'>
+              {product.imageUrl ? (
                 <img
-                  src={imageUrl(product.image)}
+                  src={product.imageUrl || "/placeholder.svg"}
                   alt={product.name}
                   className='object-cover w-full h-full'
                 />
@@ -79,7 +77,7 @@ export default function ProductGrid({ products }: { products: Product[] }) {
                 <span className='text-white/50 text-xs'>No Image</span>
               )}
             </div>
-            <div className='text-center mb-1 text-sm font-medium'>
+            <div className='text-center mb-1 text-sm font-medium line-clamp-1 w-full'>
               {product.name}
             </div>
             <div className='flex items-center mb-2'>
@@ -91,7 +89,7 @@ export default function ProductGrid({ products }: { products: Product[] }) {
                 strokeWidth='2'
                 strokeLinecap='round'
                 strokeLinejoin='round'
-                className='w-4 h-4 mr-1'
+                className='w-4 h-4 mr-1 flex-shrink-0'
               >
                 <circle cx='12' cy='12' r='10' />
                 <polyline points='12 6 12 12 16 14' />
@@ -103,7 +101,7 @@ export default function ProductGrid({ products }: { products: Product[] }) {
             <Button
               variant='outline'
               size='sm'
-              className='w-full'
+              className='w-full text-xs h-8'
               onClick={() => handleBuy(product)}
             >
               Buy
@@ -113,15 +111,19 @@ export default function ProductGrid({ products }: { products: Product[] }) {
       </div>
 
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-        <DialogContent className='sm:max-w-md'>
+        <DialogContent className='sm:max-w-md max-w-[95vw] p-4 sm:p-6'>
           <DialogHeader>
-            <DialogTitle className='text-center'>Get item</DialogTitle>
+            <DialogTitle className='text-center'>
+              {loading
+                ? "Processing your request..."
+                : `Get ${selectedProduct?.name}`}
+            </DialogTitle>
           </DialogHeader>
-          <div className='flex flex-col items-center py-4'>
-            <div className='w-24 h-24 rounded-full bg-gradient-to-r from-pink-500 to-purple-500 border-2 border-yellow-400 mb-4 overflow-hidden flex items-center justify-center'>
-              {selectedProduct?.image ? (
+          <div className='flex flex-col items-center py-2 sm:py-4'>
+            <div className='w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-gradient-to-r from-pink-500 to-purple-500 border-2 border-yellow-400 mb-4 overflow-hidden flex items-center justify-center'>
+              {selectedProduct?.imageUrl ? (
                 <img
-                  src={imageUrl(selectedProduct.image)}
+                  src={selectedProduct.imageUrl || "/placeholder.svg"}
                   alt={selectedProduct?.name}
                   className='object-cover w-full h-full'
                 />
@@ -129,59 +131,58 @@ export default function ProductGrid({ products }: { products: Product[] }) {
                 <span className='text-white/50 text-xs'>No Image</span>
               )}
             </div>
-            <DialogDescription className='text-center mb-4'>
-              Would you like to Get "{selectedProduct?.name}" for free?
-            </DialogDescription>
-            <div className='grid w-full gap-4 mb-4'>
-              <div className='grid gap-2'>
-                <Label htmlFor='contact'>Email or Phone Number</Label>
-                <Input
-                  id='contact'
-                  placeholder='Enter Name'
-                  value={contactInfo}
-                  onChange={(e) => setContactInfo(e.target.value)}
-                />
+            {!loading ? (
+              <>
+                <DialogDescription className='text-center mb-4'>
+                  Would you like to Get "{selectedProduct?.name}" For Free?
+                </DialogDescription>
+                <div className='grid w-full gap-4 mb-4'>
+                  <div className='grid gap-2'>
+                    <Label htmlFor='username'>Username</Label>
+                    <Input
+                      id='username'
+                      placeholder='Enter your username'
+                      value={username}
+                      onChange={(e) => setUsername(e.target.value)}
+                      className='h-10'
+                    />
+                  </div>
+                </div>
+                <div className='flex flex-col sm:flex-row w-full gap-4'>
+                  <Button
+                    variant='outline'
+                    className='w-full'
+                    onClick={() => setIsModalOpen(false)}
+                  >
+                    Cancel
+                  </Button>
+                  <div className='w-full flex items-center gap-2 border rounded-md px-4 py-2'>
+                    <RadioGroup
+                      value={selectedProduct?.isFree ? "free" : "paid"}
+                      className='flex items-center'
+                    >
+                      <RadioGroupItem value='free' id='free' />
+                      <Label htmlFor='free'>Free</Label>
+                    </RadioGroup>
+                  </div>
+                </div>
+                <Button className='w-full mt-4' onClick={handleSubmit}>
+                  Submit
+                </Button>
+              </>
+            ) : (
+              <div className='w-full flex flex-col items-center justify-center py-6'>
+                <div className='animate-spin rounded-full h-10 w-10 border-b-2 border-pink-500 mb-4'></div>
+                <span className='text-pink-500 font-semibold'>
+                  Processing...
+                </span>
               </div>
-
-            </div>
-            <div className='flex w-full gap-4'>
-              <Button
-                variant='outline'
-                className='w-full'
-                onClick={() => setIsModalOpen(false)}
-              >
-                Cancel
-              </Button>
-              <div className='w-full flex items-center gap-2 border rounded-md px-4 py-2'>
-                <RadioGroup
-                  value={selectedProduct?.isFree ? "free" : "paid"}
-                  className='flex items-center'
-                >
-                  <RadioGroupItem value='free' id='free' />
-                  <Label htmlFor='free'>Free</Label>
-                  {/* Optionally, add a paid option if you want to show both */}
-                  {/* <RadioGroupItem value='paid' id='paid' />
-                  <Label htmlFor='paid'>Paid</Label> */}
-                </RadioGroup>
-              </div>
-            </div>
-            <Button className='w-full mt-4' onClick={handleSubmit}>
-              Submit
-            </Button>
+            )}
           </div>
         </DialogContent>
       </Dialog>
     </>
   );
-}
+};
 
-{/*               <div className='grid gap-2'>
-                <Label htmlFor='quantity'>How many pieces?</Label>
-                <Input
-                  id='quantity'
-                  type='number'
-                  min='1'
-                  value={quantity}
-                  onChange={(e) => setQuantity(e.target.value)}
-                />
-              </div> */}
+export default ProductGrid;
