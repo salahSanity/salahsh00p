@@ -53,16 +53,15 @@ async function getHero(): Promise<HeroData> {
 }
 
 async function getProducts(): Promise<Product[]> {
-  const data = await client.fetch(`*[_type == "product"]{
+  const data =    await client.fetch(`*[_type == "product"] | order(_createdAt desc){
     _id,
     name,
     isFree,
     price,
     image,
-    "id": _id
-  }`, {
-        cache: 'no-store',
-    });
+    "id": _id,
+    link
+  }`);
   return data;
 }
 
