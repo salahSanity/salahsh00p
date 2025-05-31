@@ -130,7 +130,7 @@ export default function ProductGrid({ products }: { products: Product[] }) {
               )}
             </div>
             <DialogDescription className='text-center mb-4'>
-              Would you like to Get "{selectedProduct?.name}"?
+              Would you like to Get "{selectedProduct?.name}" for free?
             </DialogDescription>
             <div className='grid w-full gap-4 mb-4'>
               <div className='grid gap-2'>
@@ -142,16 +142,7 @@ export default function ProductGrid({ products }: { products: Product[] }) {
                   onChange={(e) => setContactInfo(e.target.value)}
                 />
               </div>
-              <div className='grid gap-2'>
-                <Label htmlFor='quantity'>How many pieces?</Label>
-                <Input
-                  id='quantity'
-                  type='number'
-                  min='1'
-                  value={quantity}
-                  onChange={(e) => setQuantity(e.target.value)}
-                />
-              </div>
+
             </div>
             <div className='flex w-full gap-4'>
               <Button
@@ -183,3 +174,14 @@ export default function ProductGrid({ products }: { products: Product[] }) {
     </>
   );
 }
+
+{/*               <div className='grid gap-2'>
+                <Label htmlFor='quantity'>How many pieces?</Label>
+                <Input
+                  id='quantity'
+                  type='number'
+                  min='1'
+                  value={quantity}
+                  onChange={(e) => setQuantity(e.target.value)}
+                />
+              </div> */}
