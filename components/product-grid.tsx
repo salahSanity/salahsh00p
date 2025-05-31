@@ -38,7 +38,7 @@ export default function ProductGrid({ products }: { products: Product[] }) {
 
   const handleSubmit = async () => {
     if (!contactInfo) {
-      toast.error("Please enter your email or phone number");
+      toast.error("Please enter your name");
       return;
     }
 
@@ -137,7 +137,7 @@ export default function ProductGrid({ products }: { products: Product[] }) {
                 <Label htmlFor='contact'>Email or Phone Number</Label>
                 <Input
                   id='contact'
-                  placeholder='Enter email or phone'
+                  placeholder='Enter Name'
                   value={contactInfo}
                   onChange={(e) => setContactInfo(e.target.value)}
                 />
